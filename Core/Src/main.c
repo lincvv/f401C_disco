@@ -54,6 +54,7 @@ SPI_HandleTypeDef hspi1;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void PeriphCommonClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_I2S2_Init(void);
@@ -103,6 +104,9 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
+/* Configure the peripherals common clocks */
+  PeriphCommonClock_Config();
+
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
@@ -126,9 +130,20 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
+//    SystemCoreClock = 16000000;
+    SysTick_Config(SystemCoreClock / 6);
+
+    while (1)
   {
+      if (SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk){
+          HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
+          GPIOD->ODR ^= GPIO_ODR_ODR_15;
+//          SysTick->CTRL &= ~SysTick_CTRL_COUNTFLAG_Msk;
+//          SysTick->CTRL = 0;
+      }
     /* USER CODE END WHILE */
+
+
     MX_USB_HOST_Process();
 
     /* USER CODE BEGIN 3 */
@@ -136,18 +151,13 @@ int main(void)
 //      delay(1000);
 //      HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
 
-      if (SystemCoreClock == 84000000)
-      {
+//      if (SystemCoreClock == 84000000)
+//      {
+//
+//          HAL_GPIO_TogglePin(LD5_GPIO_Port, LD5_Pin);
+//      }
 
-          HAL_GPIO_TogglePin(LD5_GPIO_Port, LD5_Pin);
-      }
 
-      if (SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk){
-          HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
-//          SysTick->CTRL &= ~SysTick_CTRL_COUNTFLAG_Msk;
-          SysTick->CTRL = 0;
-          SysTick_Config(SystemCoreClock/1000 - 1);
-      }
   }
   /* USER CODE END 3 */
 }
@@ -160,7 +170,6 @@ void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
   */
@@ -194,6 +203,18 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief Peripherals Common Clock Configuration
+  * @retval None
+  */
+void PeriphCommonClock_Config(void)
+{
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+
+  /** Initializes the peripherals clock
+  */
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_I2S;
   PeriphClkInitStruct.PLLI2S.PLLI2SN = 192;
   PeriphClkInitStruct.PLLI2S.PLLI2SR = 2;
