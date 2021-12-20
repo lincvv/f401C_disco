@@ -78,3 +78,6 @@
 /cmake-build-debug/CMakeFiles/f401C_disco.elf.dir/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c.obj
 /cmake-build-debug/CMakeFiles/f401C_disco.elf.dir/USB_HOST/Target/usbh_platform.c.obj
 /.idea/workspace.xml
+/.idea/modules.xml
+/.idea/.gitignore
+/.idea/vcs.xml
